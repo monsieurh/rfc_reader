@@ -8,6 +8,8 @@ import sys
 import tarfile
 from urllib.request import urlopen
 
+__version__ = "0.5"
+
 
 class Config(object):
     LOCAL_STORAGE_PATH = "~/.rfc"
@@ -150,6 +152,8 @@ def main():
     parser.add_argument("--pager", "-p", nargs=1, dest="pager", required=False, default=None,
                         help="Uses the given program to open RFC documents. "
                              "Default program is env var $PAGER or `less` if not found")
+    parser.add_argument('--version', action='version',
+                        version='%(prog)s {version}'.format(version=__version__))
 
     config = parser.parse_args()
     pager = config.pager[0] if config.pager else None
@@ -164,6 +168,8 @@ def main():
     except NoRFCFound:
         print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
         update_docs()
+        reader = RFCSearcher(pager=pager)
+        reader.open(number)
 
     except RFCNotFoundException:
         print("RFC number %d not found, check your input or re-run with the --update flag" % number,

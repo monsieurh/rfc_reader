@@ -3,13 +3,15 @@ from os import path
 
 from setuptools import find_packages
 
+from rfc import rfc
+
 here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 
 setup(
     name='rfc_reader',
-    version='0.3',
+    version=rfc.__version__,
     packages=find_packages(exclude=['tests']),
     # scripts=['rfc.py'],
     url='https://github.com/monsieurh/rfc_reader',
