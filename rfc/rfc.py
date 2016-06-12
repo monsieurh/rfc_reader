@@ -148,7 +148,7 @@ class NoRFCFound(Exception):
     pass
 
 
-class RFCSearcher(object):
+class RFCReader(object):
     FILE_REGEX = re.compile("rfc[0-9]+\.txt")
     NUM_REGEX = re.compile('\d+')
 
@@ -193,12 +193,36 @@ class RFCSearcher(object):
         return "less -s"  # Default pager
 
 
-def update_docs():
-    downloader = RFCDownloader()
-    if not downloader.is_connected():
-        print("No internet connection to update, exiting...", file=sys.stderr)
-        exit(-1)
-    downloader.update()
+class RFCAppp(object):
+    def __init__(self, pager=None):
+        super().__init__()
+        try:
+            self.reader = RFCReader(pager)
+        except NoRFCFound:
+            print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
+            self._update_docs()
+            self.reader = RFCReader(pager=pager)
+
+    def open_rfc(self, rfc_number):
+        try:
+            self.reader.open(rfc_number)
+        except RFCNotFoundException:
+            print("RFC number %d not found, check your input or re-run with the --update flag" % rfc_number,
+                  file=sys.stderr)
+
+    def search(self, keyword):
+        index = RFCIndexReader()
+        return index.find(keyword)
+
+    def update(self):
+        self._update_docs()
+
+    def _update_docs(self):
+        downloader = RFCDownloader()
+        if not downloader.is_connected():
+            print("No internet connection to update, exiting...", file=sys.stderr)
+            exit(-1)
+        downloader.update()
 
 
 def main():
@@ -227,29 +251,17 @@ def main():
     config = parser.parse_args()
 
     pager = config.pager[0] if config.pager else None
-    number = config.RFC_NUMBER[0]
+
+    app = RFCAppp(pager)
     if config.update:
-        update_docs()
+        app.update()
 
-    if config.keyword:  # TODO: An app object so we can handle stuff when no db in place
-        index = RFCIndexReader()
-        for rfcdoc in index.find(config.keyword):
-            print(rfcdoc)
-        exit(0)
+    if config.keyword:
+        for doc in app.search(config.keyword):
+            print(doc)
 
-    try:
-        reader = RFCSearcher(pager=pager)
-        reader.open(number)
-
-    except NoRFCFound:
-        print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
-        update_docs()
-        reader = RFCSearcher(pager=pager)
-        reader.open(number)
-
-    except RFCNotFoundException:
-        print("RFC number %d not found, check your input or re-run with the --update flag" % number,
-              file=sys.stderr)
+    if config.RFC_NUMBER:
+        app.open_rfc(config.RFC_NUMBER)
 
 
 if __name__ == "__main__":

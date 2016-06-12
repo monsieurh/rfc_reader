@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 
-from rfc.rfc import RFCDownloader, Config, RFCSearcher
+from rfc.rfc import RFCDownloader, Config, RFCReader
 
 
 def touch(fname, times=None):
@@ -48,7 +48,7 @@ class TestSearch(unittest.TestCase):
 
         touch(os.path.join(local_path, "not_rfc_valid_name%d.docx" % 12))
 
-        self.searcher = RFCSearcher(local_path)
+        self.searcher = RFCReader(local_path)
 
     def test_find_available_rfc(self):
         self.assertTrue(self.searcher.is_available(40))
