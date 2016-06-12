@@ -3,6 +3,7 @@
 import argparse
 import os
 import re
+import shutil
 import sys
 import tarfile
 from urllib.request import urlopen
@@ -18,8 +19,8 @@ class RFCDownloader(object):
 
     def update_bulk(self):
         full_path = self._get_storage_path()
-        if not os.path.exists(full_path):
-            os.mkdir(full_path)
+        shutil.rmtree(full_path)
+        os.mkdir(full_path)
         self._download_file(self.RFC_BULK, full_path)
         self._uncompress_bulk_file()
 
