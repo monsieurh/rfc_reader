@@ -62,7 +62,7 @@ class RFCDocument(object):
         self.id = self._parse_id()
 
     def _parse_id(self):
-        return self.ID_REGEX.findall(self.desc)[0]
+        return int(self.ID_REGEX.findall(self.desc)[0])
 
     def contains(self, search_string):
         return search_string in self.desc
@@ -94,14 +94,15 @@ class RFCDownloader(object):
         try:
             urlopen(self.RFC_HOME)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def is_data_present(self):
         path = self._get_storage_path()
         return os.path.exists(path) and len(os.listdir(path)) > 0
 
-    def _get_storage_path(self):
+    @staticmethod
+    def _get_storage_path():
         return os.path.expanduser(Config.LOCAL_STORAGE_PATH)
 
     @staticmethod
@@ -193,7 +194,7 @@ class RFCReader(object):
         return "less -s"  # Default pager
 
 
-class RFCAppp(object):
+class RFCApp(object):
     def __init__(self, pager=None):
         super().__init__()
         try:
@@ -212,12 +213,14 @@ class RFCAppp(object):
 
     def search(self, keyword):
         index = RFCIndexReader()
-        return index.find(keyword)
+        rfc_summaries = index.find(keyword)
+        return [doc for doc in rfc_summaries if self.reader.is_available(doc.id)]
 
     def update(self):
         self._update_docs()
 
-    def _update_docs(self):
+    @staticmethod
+    def _update_docs():
         downloader = RFCDownloader()
         if not downloader.is_connected():
             print("No internet connection to update, exiting...", file=sys.stderr)
@@ -252,7 +255,7 @@ def main():
 
     pager = config.pager[0] if config.pager else None
 
-    app = RFCAppp(pager)
+    app = RFCApp(pager)
     if config.update:
         app.update()
 
