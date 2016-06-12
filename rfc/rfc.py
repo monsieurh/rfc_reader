@@ -214,7 +214,8 @@ class RFCApp(object):
     def search(self, keyword):
         index = RFCIndexReader()
         rfc_summaries = index.find(keyword)
-        return [doc for doc in rfc_summaries if self.reader.is_available(doc.id)]
+        # sorted(student_objects, key=lambda student: student.age)
+        return sorted([doc for doc in rfc_summaries if self.reader.is_available(doc.id)], key=lambda doc: doc.id)
 
     def update(self):
         self._update_docs()
