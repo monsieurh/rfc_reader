@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-import tarfile
 import re
+import tarfile
 from urllib.request import urlopen
 
 
@@ -75,21 +75,34 @@ class RFCDownloader(object):
         os.remove(archive_path)
 
 
+class RFCNotFoundException(Exception):
+    pass
+
+
 class RFCSearcher(object):
     FILE_REGEX = re.compile("rfc[0-9]+\.txt")
     NUM_REGEX = re.compile('\d+')
 
     def __init__(self, scan_path=Config.LOCAL_STORAGE_PATH):
         super().__init__()
-        self._path = os.path.expandvars(scan_path)
+        self._path = os.path.expanduser(scan_path)
         self._known_documents = set()
         self._scan()
 
     def is_available(self, rfc_number):
         return rfc_number in self._known_documents
 
+    def open(self, rfc_number):
+        if not self.is_available(rfc_number):
+            raise RFCNotFoundException("RFC %d not found" % rfc_number)
+        os.path.join(self._path)
+        os.system("less -s %s" % self._get_file_path(rfc_number))
+
     def _scan(self):
         for file_name in os.listdir(self._path):
             if self.FILE_REGEX.match(file_name):
                 for num in self.NUM_REGEX.findall(file_name):
                     self._known_documents.add(int(num))
+
+    def _get_file_path(self, rfc_number):
+        return os.path.join(self._path, "rfc%d.txt" % rfc_number)
