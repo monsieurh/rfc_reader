@@ -134,7 +134,7 @@ def update_docs():
     downloader.update_bulk()
 
 
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser(
         description="%(prog)s is the python RFC reader. "
                     "It stores a local copy of all the RFC "
@@ -148,12 +148,9 @@ if __name__ == "__main__":
     parser.add_argument("--pager", "-p", nargs=1, dest="pager", required=False, default=None,
                         help="Uses the given program to open RFC documents. "
                              "Default program is env var $PAGER or `less` if not found")
-
     config = parser.parse_args()
-
     if config.update:
         update_docs()
-
     try:
         reader = RFCSearcher(pager=config.pager[0])
     except NoRFCFound:
@@ -168,3 +165,7 @@ if __name__ == "__main__":
         except RFCNotFoundException:
             print("RFC number %d not found, check your input or re-run with the --update flag" % number,
                   file=sys.stderr)
+
+
+if __name__ == "__main__":
+    main()
