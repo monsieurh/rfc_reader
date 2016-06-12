@@ -9,7 +9,7 @@ with open(path.join(here, 'README.md')) as f:
 
 setup(
     name='rfc_reader',
-    version='0.2',
+    version='0.3',
     packages=find_packages(exclude=['tests']),
     # scripts=['rfc.py'],
     url='https://github.com/monsieurh/rfc_reader',
