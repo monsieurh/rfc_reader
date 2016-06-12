@@ -85,11 +85,12 @@ class RFCSearcher(object):
     FILE_REGEX = re.compile("rfc[0-9]+\.txt")
     NUM_REGEX = re.compile('\d+')
 
-    def __init__(self, scan_path=Config.LOCAL_STORAGE_PATH):
+    def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
         super().__init__()
         self._path = os.path.expanduser(scan_path)
         self._known_documents = set()
         self._scan()
+        self._pager = self._get_pager(pager)
         if len(self._known_documents) == 0:
             raise NoRFCFound()
 
@@ -100,7 +101,8 @@ class RFCSearcher(object):
         if not self.is_available(rfc_number):
             raise RFCNotFoundException("RFC %d not found" % rfc_number)
         os.path.join(self._path)
-        os.system("less -s %s" % self._get_file_path(rfc_number))
+        print(self._pager)
+        os.system("{} {}".format(self._pager, self._get_file_path(rfc_number)))
 
     def _scan(self):
         for file_name in os.listdir(self._path):
@@ -110,6 +112,17 @@ class RFCSearcher(object):
 
     def _get_file_path(self, rfc_number):
         return os.path.join(self._path, "rfc%d.txt" % rfc_number)
+
+    @staticmethod
+    def _get_pager(param_pager):
+        if param_pager is not None:
+            return param_pager
+
+        system_pager = os.getenv("PAGER", None)
+        if system_pager is not None:
+            return system_pager
+
+        return "less -s"  # Default pager
 
 
 def update_docs():
@@ -121,13 +134,19 @@ def update_docs():
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="%(prog)s is the python RFC reader. "
+                    "It stores a local copy of all the RFC "
+                    "documents and allows one to search a read through them."
+                    "For more info and contact : See https://github.com/monsieurh/rfc_reader",
+        epilog="Released under GPLv3")
     parser.add_argument("--update", required=False, default=False, action='store_true',
                         help="Updates the local copy of RFC documents with the latest (weekly) publication of the IETF")
     parser.add_argument(metavar='RFC_NUMBER', type=int, nargs=1, dest="RFC_NUMBER",
                         help="Opens the RFC_NUMBER for reading")
-    # TODO: Handle this
-    # parser.add_argument("--pager", "-p")
+    parser.add_argument("--pager", "-p", nargs=1, dest="pager", required=False, default=None,
+                        help="Uses the given program to open RFC documents. "
+                             "Default program is env var $PAGER or `less` if not found")
 
     config = parser.parse_args()
 
@@ -135,7 +154,7 @@ if __name__ == "__main__":
         update_docs()
 
     try:
-        reader = RFCSearcher()
+        reader = RFCSearcher(pager=config.pager[0])
     except NoRFCFound:
         print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
         update_docs()
