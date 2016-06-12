@@ -152,7 +152,8 @@ def main():
     if config.update:
         update_docs()
     try:
-        reader = RFCSearcher(pager=config.pager[0])
+        pager = config.pager[0] if config.pager else None
+        reader = RFCSearcher(pager=pager)
     except NoRFCFound:
         print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
         update_docs()
