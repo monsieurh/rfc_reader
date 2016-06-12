@@ -1,5 +1,5 @@
 # rfc_reader
-The CLI RFC reader for linux :
+The CLI RFC reader :
 - Open any published RFC with your favorite program
 - Quickly search through RFC summaries with `rfc -k <keyword>`
 - Full offline access `~/.rfc/`
