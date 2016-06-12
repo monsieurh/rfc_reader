@@ -63,7 +63,7 @@ class RFCDownloader(object):
             f.write(buffer)
             status = r"[%3.2f%%]" % (file_size_dl * 100. / file_size)
             status += chr(8) * (len(status) + 1)
-            print(status)
+            print(status, end="\r")
         f.close()
 
     def _uncompress_bulk_file(self):
