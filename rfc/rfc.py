@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import argparse
 import os
 import re
+import sys
 import tarfile
 from urllib.request import urlopen
 
 
 class Config(object):
     LOCAL_STORAGE_PATH = "~/.rfc"
-
-
-class RFCReader(object):
-    pass
 
 
 class RFCDownloader(object):
@@ -79,6 +77,10 @@ class RFCNotFoundException(Exception):
     pass
 
 
+class NoRFCFound(Exception):
+    pass
+
+
 class RFCSearcher(object):
     FILE_REGEX = re.compile("rfc[0-9]+\.txt")
     NUM_REGEX = re.compile('\d+')
@@ -88,6 +90,8 @@ class RFCSearcher(object):
         self._path = os.path.expanduser(scan_path)
         self._known_documents = set()
         self._scan()
+        if len(self._known_documents) == 0:
+            raise NoRFCFound()
 
     def is_available(self, rfc_number):
         return rfc_number in self._known_documents
@@ -106,3 +110,41 @@ class RFCSearcher(object):
 
     def _get_file_path(self, rfc_number):
         return os.path.join(self._path, "rfc%d.txt" % rfc_number)
+
+
+def update_docs():
+    downloader = RFCDownloader()
+    if not downloader.is_connected():
+        print("No internet connection to update, exiting...", file=sys.stderr)
+        exit(-1)
+    downloader.update_bulk()
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--update", required=False, default=False, action='store_true',
+                        help="Updates the local copy of RFC documents with the latest (weekly) publication of the IETF")
+    parser.add_argument(metavar='RFC_NUMBER', type=int, nargs=1, dest="RFC_NUMBER",
+                        help="Opens the RFC_NUMBER for reading")
+    # TODO: Handle this
+    # parser.add_argument("--pager", "-p")
+
+    config = parser.parse_args()
+
+    if config.update:
+        update_docs()
+
+    try:
+        reader = RFCSearcher()
+    except NoRFCFound:
+        print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
+        update_docs()
+
+    finally:
+        number = config.RFC_NUMBER[0]
+        try:
+            # noinspection PyUnboundLocalVariable
+            reader.open(number)
+        except RFCNotFoundException:
+            print("RFC number %d not found, check your input or re-run with the --update flag" % number,
+                  file=sys.stderr)
