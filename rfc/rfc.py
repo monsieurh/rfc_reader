@@ -89,6 +89,8 @@ class RFCSearcher(object):
     def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
         super().__init__()
         self._path = os.path.expanduser(scan_path)
+        if not os.path.exists(self._path):
+            os.mkdir(self._path)
         self._known_documents = set()
         self._scan()
         self._pager = self._get_pager(pager)
