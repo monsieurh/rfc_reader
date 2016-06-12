@@ -2,7 +2,12 @@
 # -*- coding: utf-8 -*-
 import os
 import tarfile
+import re
 from urllib.request import urlopen
+
+
+class Config(object):
+    LOCAL_STORAGE_PATH = "~/.rfc"
 
 
 class RFCReader(object):
@@ -12,7 +17,6 @@ class RFCReader(object):
 class RFCDownloader(object):
     RFC_HOME = "http://www.rfc-editor.org"
     RFC_BULK = "https://www.rfc-editor.org/in-notes/tar/RFC-all.tar.gz"
-    STORAGE_PATH = "~/.rfc"
 
     def update_bulk(self):
         full_path = self._get_storage_path()
@@ -33,7 +37,7 @@ class RFCDownloader(object):
         return os.path.exists(path) and len(os.listdir(path)) > 0
 
     def _get_storage_path(self):
-        return os.path.expanduser(self.STORAGE_PATH)
+        return os.path.expanduser(Config.LOCAL_STORAGE_PATH)
 
     @staticmethod
     def _download_file(url, dest):
@@ -72,4 +76,20 @@ class RFCDownloader(object):
 
 
 class RFCSearcher(object):
-    pass
+    FILE_REGEX = re.compile("rfc[0-9]+\.txt")
+    NUM_REGEX = re.compile('\d+')
+
+    def __init__(self, scan_path=Config.LOCAL_STORAGE_PATH):
+        super().__init__()
+        self._path = os.path.expandvars(scan_path)
+        self._known_documents = set()
+        self._scan()
+
+    def is_available(self, rfc_number):
+        return rfc_number in self._known_documents
+
+    def _scan(self):
+        for file_name in os.listdir(self._path):
+            if self.FILE_REGEX.match(file_name):
+                for num in self.NUM_REGEX.findall(file_name):
+                    self._known_documents.add(int(num))
