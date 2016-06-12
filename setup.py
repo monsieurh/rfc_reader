@@ -18,7 +18,7 @@ setup(
     license='GPL3',
     author='monsieur_h',
     author_email='ray.hubert@gmail.com',
-    description='A tool to read and search through IETF RFC documents',
+    description='Consult download and search through IETF RFC documents from your terminal',
     long_description=long_description,
     keywords="RFC rfc IETF",
     platforms='any',
