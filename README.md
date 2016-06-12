@@ -3,6 +3,15 @@ The CLI RFC reader for linux :
 - Allows one to update a list of local RFC documents
 - Allows to open a RFC with any given program (default: `$PAGER` or `less`)
 
+## Installation :
+Either clone the repo and run 
+```shell
+sudo python3 setup.py install
+``` 
+or simply use pip :
+```shell
+sudo pip3 install rfc_reader
+```
 
 ## Usage : (`rfc --help` or `rfc -h` to invoke)
 ```shell
