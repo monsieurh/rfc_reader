@@ -28,7 +28,7 @@ Released under GPLv3
 ```
 
 ## Behavior :
-rfc_reader will download and/or update all RFC txt documents in `~/.rfc`. 
+rfc_reader will download and/or update all RFC txt documents from [rfc-editor-website](https://www.rfc-editor.org/) to `~/.rfc`. 
 
 The program then allows to open a RFC document by invoking :
 
