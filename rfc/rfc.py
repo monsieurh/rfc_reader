@@ -8,7 +8,7 @@ import sys
 import tarfile
 from urllib.request import urlopen
 
-__version__ = "0.5"
+__version__ = "0.6"
 
 
 class Config(object):
