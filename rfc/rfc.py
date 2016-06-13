@@ -140,11 +140,19 @@ class RFCDownloader(object):
         f.close()
 
     def _uncompress_bulk_file(self):
+        print("Extracting archive")
         file_name = self.RFC_BULK.split('/')[-1]
         archive_path = os.path.join(self._get_storage_path(), file_name)
         with tarfile.open(archive_path) as tar_file:
-            tar_file.extractall(self._get_storage_path())
+            for tar_file_member in tar_file.getmembers():
+                if tar_file_member.name.endswith('.txt'):
+                    self._uncompress_file_member(tar_file, tar_file_member)
         os.remove(archive_path)
+
+    def _uncompress_file_member(self, tar_file, tar_file_member):
+        contents = tar_file.extractfile(tar_file_member)
+        with open(os.path.join(self._get_storage_path(), os.path.basename(tar_file_member.name)), 'wb') as handle:
+            handle.write(contents.read())
 
 
 class RFCNotFoundException(Exception):
