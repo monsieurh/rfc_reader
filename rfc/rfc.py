@@ -118,7 +118,7 @@ class RFCDownloader(object):
         meta = u.info()
         file_size = RFCDownloader._find_content_len(meta)
 
-        print("Downloading: %s Bytes: %s" % (file_name, file_size))
+        print("Downloading: {0} ({1:.2f} MB)".format(file_name, file_size/1024/1024))
 
         file_size_dl = 0
         block_sz = 8192
