@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from __future__ import print_function
+
 import argparse
 import os
 import re
 import shutil
 import sys
 import tarfile
+
 try:
     from urllib.request import urlopen
 except ImportError:
@@ -67,7 +69,7 @@ class RFCDocument(object):
         return int(self.ID_REGEX.findall(self.desc)[0])
 
     def contains(self, search_string):
-        return search_string in self.desc
+        return search_string.lower() in self.desc.lower()
 
     def __str__(self):
         return self.desc
@@ -93,6 +95,7 @@ class RFCDownloader(object):
         self._download_file(self.RFC_INDEX, full_path)
 
     def is_connected(self):
+        # noinspection PyBroadException
         try:
             urlopen(self.RFC_HOME)
             return True
@@ -114,6 +117,7 @@ class RFCDownloader(object):
         f = open(os.path.join(dest, file_name), 'wb')
         meta = u.info()
         file_size = 1
+        # noinspection PyProtectedMember
         for header in meta._headers:
             if header[0] == "Content-Length":
                 file_size = int(header[1])
@@ -214,7 +218,6 @@ class RFCApp(object):
     def search(self, keyword):
         index = RFCIndexReader()
         rfc_summaries = index.find(keyword)
-        # sorted(student_objects, key=lambda student: student.age)
         return sorted([doc for doc in rfc_summaries if self.reader.is_available(doc.id)], key=lambda doc: doc.id)
 
     def update(self):
