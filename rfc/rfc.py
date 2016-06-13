@@ -123,7 +123,7 @@ class RFCDownloader(object):
                 file_size = int(header[1])
                 break
 
-        print("Downloading: %s Bytes: %s" % (file_name, file_size))
+        print("Downloading: {0} ({1:.2f} MB)".format(file_name, file_size/1024/1024))
 
         file_size_dl = 0
         block_sz = 8192
