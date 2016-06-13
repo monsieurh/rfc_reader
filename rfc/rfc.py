@@ -142,7 +142,7 @@ class RFCDownloader(object):
         :rtype: int
         """
 
-        if meta._headers:
+        if hasattr(meta, '_headers'):
             file_size = 1
             # noinspection PyProtectedMember
             for header in meta._headers:
@@ -150,7 +150,7 @@ class RFCDownloader(object):
                     file_size = int(header[1])
                     break
 
-        elif meta.getheaders:
+        elif hasattr(meta, "getheaders"):
             file_size = int(meta.getheaders("Content-Length")[0])
 
         else:
