@@ -18,7 +18,7 @@ __version__ = "0.9"
 
 
 class Config(object):
-    LOCAL_STORAGE_PATH = "~/.rfc"
+    LOCAL_STORAGE_PATH = os.getenv('XDG_DATA_HOME', "~/.local/share/rfc")
     INDEX_NAME = "rfc-index.txt"
 
 
@@ -277,6 +277,9 @@ def main():
     config = parser.parse_args()
 
     pager = config.pager[0] if config.pager else None
+
+    if not os.path.isdir(Config.LOCAL_STORAGE_PATH):
+        os.makedirs(Config.LOCAL_STORAGE_PATH)
 
     app = RFCApp(pager)
     if config.update:
