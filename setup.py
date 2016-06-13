@@ -20,7 +20,7 @@ setup(
     author_email='ray.hubert@gmail.com',
     description='Consult download and search through IETF RFC documents from your terminal',
     long_description=long_description,
-    keywords="RFC rfc IETF",
+    keywords="RFC rfc IETF rfc_reader rfc-reader",
     platforms='any',
     entry_points={
         'console_scripts': [
