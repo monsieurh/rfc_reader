@@ -54,3 +54,11 @@ rfc_reader will download and/or update all RFC txt documents from [rfc-editor-we
 `rfc -p gedit 2119` opens the same document in gedit
 
 `rfc -k UDP` outputs the summary of all RFC documents including the word 'UDP'
+
+## History :
+- v0.8 :
+    - `-k` is now case insensitive
+    - Now compatible with python2
+
+- v0.7 :
+    - Fixes `-k` ordering by RFC number
