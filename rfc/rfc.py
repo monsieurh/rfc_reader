@@ -82,7 +82,8 @@ class RFCDownloader(object):
 
     def update(self):
         full_path = Config.LOCAL_STORAGE_PATH
-        shutil.rmtree(full_path)
+        if os.path.exists(full_path):
+            shutil.rmtree(full_path)
         os.mkdir(full_path)
         self._update_bulk(full_path)
         self._update_index(full_path)
@@ -102,7 +103,8 @@ class RFCDownloader(object):
         except Exception:
             return False
 
-    def is_data_present(self):
+    @staticmethod
+    def is_data_present():
         return os.path.exists(Config.LOCAL_STORAGE_PATH) and len(os.listdir(Config.LOCAL_STORAGE_PATH)) > 0
 
     @staticmethod
@@ -174,7 +176,7 @@ class RFCReader(object):
     NUM_REGEX = re.compile('\d+')
 
     def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
-        self._path = os.path.expanduser(scan_path)
+        self._path = scan_path
         self._known_documents_ids = set()
         self._scan()
         self._pager = self._get_pager(pager)
@@ -220,7 +222,7 @@ class RFCApp(object):
         except NoRFCFound:
             print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
             self._update_docs()
-            self.reader = RFCReader(pager=pager)
+            self.reader = RFCReader(pager)
 
     def open_rfc(self, rfc_number):
         try:
@@ -246,7 +248,7 @@ class RFCApp(object):
         downloader.update()
 
 
-def main():
+def main(arguments=None):
     parser = argparse.ArgumentParser(
         description="%(prog)s is the python RFC reader. "
                     "It stores a local copy of all the RFC "
@@ -269,7 +271,7 @@ def main():
     parser.add_argument('--version', action='version',
                         version='%(prog)s {version}'.format(version=__version__))
 
-    config = parser.parse_args()
+    config = parser.parse_args(args=arguments)
 
     pager = config.pager[0] if config.pager else None
 
