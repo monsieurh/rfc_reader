@@ -18,7 +18,7 @@ __version__ = "0.9"
 
 
 class Config(object):
-    LOCAL_STORAGE_PATH = "~/.rfc"
+    LOCAL_STORAGE_PATH = os.path.expanduser("~/.rfc")
     INDEX_NAME = "rfc-index.txt"
 
 
@@ -26,7 +26,7 @@ class RFCIndexReader(object):
     START_LINE_REGEX = re.compile("^[0-9]+")
 
     def __init__(self):
-        self._path = os.path.join(os.path.expanduser(Config.LOCAL_STORAGE_PATH), Config.INDEX_NAME)
+        self._path = os.path.join(Config.LOCAL_STORAGE_PATH, Config.INDEX_NAME)
         self.kb = set()
         self._parse_index()
 
@@ -81,7 +81,7 @@ class RFCDownloader(object):
     RFC_INDEX = "https://www.ietf.org/download/rfc-index.txt"
 
     def update(self):
-        full_path = self._get_storage_path()
+        full_path = Config.LOCAL_STORAGE_PATH
         shutil.rmtree(full_path)
         os.mkdir(full_path)
         self._update_bulk(full_path)
@@ -103,12 +103,7 @@ class RFCDownloader(object):
             return False
 
     def is_data_present(self):
-        path = self._get_storage_path()
-        return os.path.exists(path) and len(os.listdir(path)) > 0
-
-    @staticmethod
-    def _get_storage_path():
-        return os.path.expanduser(Config.LOCAL_STORAGE_PATH)
+        return os.path.exists(Config.LOCAL_STORAGE_PATH) and len(os.listdir(Config.LOCAL_STORAGE_PATH)) > 0
 
     @staticmethod
     def _download_file(url, dest):
@@ -160,9 +155,9 @@ class RFCDownloader(object):
 
     def _uncompress_bulk_file(self):
         file_name = self.RFC_BULK.split('/')[-1]
-        archive_path = os.path.join(self._get_storage_path(), file_name)
+        archive_path = os.path.join(Config.LOCAL_STORAGE_PATH, file_name)
         with tarfile.open(archive_path) as tar_file:
-            tar_file.extractall(self._get_storage_path())
+            tar_file.extractall(Config.LOCAL_STORAGE_PATH)
         os.remove(archive_path)
 
 
