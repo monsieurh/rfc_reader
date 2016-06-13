@@ -116,12 +116,7 @@ class RFCDownloader(object):
         u = urlopen(url)
         f = open(os.path.join(dest, file_name), 'wb')
         meta = u.info()
-        file_size = 1
-        # noinspection PyProtectedMember
-        for header in meta._headers:
-            if header[0] == "Content-Length":
-                file_size = int(header[1])
-                break
+        file_size = RFCDownloader._find_content_len(meta)
 
         print("Downloading: %s Bytes: %s" % (file_name, file_size))
 
@@ -138,6 +133,30 @@ class RFCDownloader(object):
             status += chr(8) * (len(status) + 1)
             print(status, end="\r")
         f.close()
+
+    @staticmethod
+    def _find_content_len(meta):
+        """
+        Handles urllib/urllib2 compatibility
+        :return: size of the file in bytes
+        :rtype: int
+        """
+
+        if meta._headers:
+            file_size = 1
+            # noinspection PyProtectedMember
+            for header in meta._headers:
+                if header[0] == "Content-Length":
+                    file_size = int(header[1])
+                    break
+
+        elif meta.getheaders:
+            file_size = int(meta.getheaders("Content-Length")[0])
+
+        else:
+            file_size = 1
+
+        return file_size
 
     def _uncompress_bulk_file(self):
         file_name = self.RFC_BULK.split('/')[-1]
