@@ -180,8 +180,6 @@ class RFCReader(object):
 
     def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
         self._path = os.path.expanduser(scan_path)
-        if not os.path.exists(self._path):
-            os.mkdir(self._path)
         self._known_documents_ids = set()
         self._scan()
         self._pager = self._get_pager(pager)
@@ -198,6 +196,8 @@ class RFCReader(object):
         os.system("{} {}".format(self._pager, self._get_file_path(rfc_number)))
 
     def _scan(self):
+        if not os.path.exists(self._path):
+            return
         for file_name in os.listdir(self._path):
             if self.FILE_REGEX.match(file_name):
                 for num in self.NUM_REGEX.findall(file_name):
