@@ -7,11 +7,11 @@ The CLI RFC reader :
 ## Installation :
 Either clone the repo and run 
 ```shell
-sudo python setup.py install
+python setup.py install
 ```
 or simply use pip :
 ```shell
-sudo pip install rfc_reader
+pip install rfc_reader
 ```
 
 ## Usage : 
