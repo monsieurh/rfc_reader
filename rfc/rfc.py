@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+from __future__ import print_function
 import argparse
 import os
 import re
 import shutil
 import sys
 import tarfile
-from urllib.request import urlopen
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib2 import urlopen
 
 __version__ = "0.7"
 
@@ -20,7 +24,6 @@ class RFCIndexReader(object):
     START_LINE_REGEX = re.compile("^[0-9]+")
 
     def __init__(self):
-        super().__init__()
         self._path = os.path.join(os.path.expanduser(Config.LOCAL_STORAGE_PATH), Config.INDEX_NAME)
         self.kb = set()
         self._parse_index()
@@ -57,7 +60,6 @@ class RFCDocument(object):
     ID_REGEX = re.compile("^[0-9]+")
 
     def __init__(self, index_string):
-        super().__init__()
         self.desc = index_string
         self.id = self._parse_id()
 
@@ -154,7 +156,6 @@ class RFCReader(object):
     NUM_REGEX = re.compile('\d+')
 
     def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
-        super().__init__()
         self._path = os.path.expanduser(scan_path)
         if not os.path.exists(self._path):
             os.mkdir(self._path)
@@ -196,7 +197,6 @@ class RFCReader(object):
 
 class RFCApp(object):
     def __init__(self, pager=None):
-        super().__init__()
         try:
             self.reader = RFCReader(pager)
         except NoRFCFound:

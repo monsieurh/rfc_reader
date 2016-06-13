@@ -1,5 +1,5 @@
 # rfc_reader
-The CLI RFC reader for linux :
+The CLI RFC reader :
 - Open any published RFC with your favorite program
 - Quickly search through RFC summaries with `rfc -k <keyword>`
 - Full offline access `~/.rfc/`
@@ -7,11 +7,11 @@ The CLI RFC reader for linux :
 ## Installation :
 Either clone the repo and run 
 ```shell
-sudo python3 setup.py install
-``` 
+sudo python setup.py install
+```
 or simply use pip :
 ```shell
-sudo pip3 install rfc_reader
+sudo pip install rfc_reader
 ```
 
 ## Usage : 
