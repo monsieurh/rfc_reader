@@ -124,7 +124,7 @@ class RFCDownloader(object):
         meta = u.info()
         file_size = RFCDownloader._find_content_len(meta)
 
-        print("%s : %s" % (file_name, file_size))
+        print("{0} : {1:.2f}MB".format(file_name, file_size/1024/1024))
 
         file_size_dl = 0
         block_sz = 8192
@@ -156,7 +156,7 @@ class RFCDownloader(object):
                     file_size = int(header[1])
                     break
 
-        elif hasattr(meta, "getheaders"):
+        elif hasattr(meta, "getheaders") and meta.getheaders('Content-Length'):
             file_size = int(meta.getheaders("Content-Length")[0])
 
         else:
@@ -221,7 +221,7 @@ class RFCReader(object):
         if system_pager is not None:
             return system_pager
 
-        return "less -s"  # Default pager
+        return "less -r -s"  # Default pager
 
 
 class RFCApp(object):
