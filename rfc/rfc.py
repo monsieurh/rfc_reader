@@ -150,7 +150,7 @@ class RFCDownloader(object):
                     file_size = int(header[1])
                     break
 
-        elif hasattr(meta, "getheaders"):
+        elif hasattr(meta, "getheaders") and meta.getheaders('Content-Length'):
             file_size = int(meta.getheaders("Content-Length")[0])
 
         else:
