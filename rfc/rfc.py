@@ -215,7 +215,7 @@ class RFCReader(object):
         if system_pager is not None:
             return system_pager
 
-        return "less -s"  # Default pager
+        return "less -r -s"  # Default pager
 
 
 class RFCApp(object):
