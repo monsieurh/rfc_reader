@@ -35,14 +35,22 @@ class RFCIndexReader(object):
         with open(self._path) as opened_file:
             for line in opened_file:
                 if self._is_start_line(line):
+                    if docstring:  # If there was no separation line with the previous entry
+                        self._register_index(docstring)
                     docstring = line
 
                 elif self._is_end_line(line) and docstring:
-                    self.kb.add(RFCDocument(docstring))
+                    self._register_index(docstring)
                     docstring = None
 
                 elif self._is_content_line(line) and docstring:
                     docstring += line
+
+            if docstring:  # If the index doesn't end with an empty line
+                self._register_index(docstring)
+
+    def _register_index(self, docstring):
+        self.kb.add(RFCDocument(docstring))
 
     def _is_start_line(self, line):
         return self.START_LINE_REGEX.match(line)
@@ -109,13 +117,14 @@ class RFCDownloader(object):
 
     @staticmethod
     def _download_file(url, dest):
+        print("Downloading %s" % url)
         file_name = url.split('/')[-1]
         u = urlopen(url)
         f = open(os.path.join(dest, file_name), 'wb')
         meta = u.info()
         file_size = RFCDownloader._find_content_len(meta)
 
-        print("Downloading: %s Bytes: %s" % (file_name, file_size))
+        print("%s : %s" % (file_name, file_size))
 
         file_size_dl = 0
         block_sz = 8192
@@ -175,8 +184,8 @@ class RFCReader(object):
     FILE_REGEX = re.compile("rfc[0-9]+\.txt")
     NUM_REGEX = re.compile('\d+')
 
-    def __init__(self, pager=None, scan_path=Config.LOCAL_STORAGE_PATH):
-        self._path = scan_path
+    def __init__(self, pager=None):
+        self._path = Config.LOCAL_STORAGE_PATH
         self._known_documents_ids = set()
         self._scan()
         self._pager = self._get_pager(pager)
@@ -220,7 +229,7 @@ class RFCApp(object):
         try:
             self.reader = RFCReader(pager)
         except NoRFCFound:
-            print("No RFC documents found, downloading full archive from IETF site...", file=sys.stderr)
+            print("No RFC documents found !", file=sys.stderr)
             self._update_docs()
             self.reader = RFCReader(pager)
 
@@ -237,6 +246,7 @@ class RFCApp(object):
         return sorted([doc for doc in rfc_summaries if self.reader.is_available(doc.id)], key=lambda doc: doc.id)
 
     def update(self):
+        print("Downloading full archive from IETF site...")
         self._update_docs()
 
     @staticmethod
@@ -244,9 +254,13 @@ class RFCApp(object):
         downloader = RFCDownloader()
         if not downloader.is_connected():
             print("No internet connection to update, exiting...", file=sys.stderr)
-            exit(-1)
-        downloader.update()
+            exit_wrapper(-1)
+        else:
+            downloader.update()
 
+
+def exit_wrapper(ret_code=0):
+    exit(ret_code)
 
 def main(arguments=None):
     parser = argparse.ArgumentParser(
@@ -285,6 +299,8 @@ def main(arguments=None):
 
     if config.RFC_NUMBER:
         app.open_rfc(config.RFC_NUMBER)
+
+    exit_wrapper(0)
 
 
 if __name__ == "__main__":
