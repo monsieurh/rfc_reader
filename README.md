@@ -56,11 +56,17 @@ rfc_reader will download and/or update all RFC txt documents from [rfc-editor-we
 `rfc -k UDP` outputs the summary of all RFC documents including the word 'UDP'
 
 ## History :
+- 1.0 :
+    - adds XDG compliant storage path ([MartijnBraam](https://github.com/MartijnBraam))
+    - doesn't show ugly `^L` characters with default pager ([objectified](https://github.com/objectified))
 - v0.9 :
     - bugfix
 - v0.8 :
     - `-k` is now case insensitive
-    - Now compatible with python2
+    - Now compatible with python2 ([joshfriend](https://github.com/joshfriend))
 
 - v0.7 :
     - Fixes `-k` ordering by RFC number
+
+## Running tests :
+Simply use `python2 -m unittest discover -v` or `python3 -m unittest discover -v`
