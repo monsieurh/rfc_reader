@@ -18,7 +18,7 @@ __version__ = "0.9"
 
 
 class Config(object):
-    LOCAL_STORAGE_PATH = os.path.expanduser("~/.rfc")
+    LOCAL_STORAGE_PATH = os.path.expanduser(os.getenv('XDG_DATA_HOME', "~/.local/share/rfc"))
     INDEX_NAME = "rfc-index.txt"
 
 
