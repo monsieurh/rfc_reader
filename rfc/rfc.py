@@ -14,7 +14,7 @@ try:
 except ImportError:
     from urllib2 import urlopen
 
-__version__ = "0.9"
+__version__ = "1.0"
 
 
 class Config(object):
