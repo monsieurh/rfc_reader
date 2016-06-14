@@ -262,6 +262,7 @@ class RFCApp(object):
 def exit_wrapper(ret_code=0):
     exit(ret_code)
 
+
 def main(arguments=None):
     parser = argparse.ArgumentParser(
         description="%(prog)s is the python RFC reader. "
