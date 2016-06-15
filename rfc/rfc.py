@@ -176,7 +176,7 @@ class RFCDownloader(object):
 
     def _uncompress_file_member(self, tar_file, tar_file_member):
         contents = tar_file.extractfile(tar_file_member)
-        with open(os.path.join(self._get_storage_path(), os.path.basename(tar_file_member.name)), 'wb') as handle:
+        with open(os.path.join(Config.LOCAL_STORAGE_PATH, os.path.basename(tar_file_member.name)), 'wb') as handle:
             handle.write(contents.read())
 
 
