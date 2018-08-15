@@ -92,7 +92,7 @@ class RFCDownloader(object):
         full_path = Config.LOCAL_STORAGE_PATH
         if os.path.exists(full_path):
             shutil.rmtree(full_path)
-        os.mkdir(full_path)
+        os.makedirs(full_path)
         self._update_bulk(full_path)
         self._update_index(full_path)
 
